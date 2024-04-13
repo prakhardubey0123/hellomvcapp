@@ -54,17 +54,16 @@ pipeline {
          stage('SonarQube Scan') {
             steps {
                 script {
-                    // Install dotnet-sonarscanner tool globally
+                    // Install dotnet-sonarscanner tool
                     sh 'dotnet tool install --global dotnet-sonarscanner'
-
-                    // Begin SonarQube analysis
-                    sh "dotnet sonarscanner begin /k:\"hello-world-mvc\" /d:sonar.host.url=\"http://localhost:9000\" /d:sonar.login=\"$SONAR_LOGIN\""
-
-                    // Build the solution
+                    // Add dotnet tools directory to PATH
+                    env.PATH += ":${tool 'dotnet'}"
+                    // Execute SonarScanner begin
+                    sh "dotnet sonarscanner begin /k:${env.SONAR_PROJECT_KEY} /d:sonar.host.url=${env.SONAR_HOST_URL} /d:sonar.login=${env.SONAR_LOGIN}"
+                    // Build the project
                     sh 'dotnet build'
-
-                    // End SonarQube analysis
-                    sh "dotnet sonarscanner end /d:sonar.login=\"$SONAR_LOGIN\""
+                    // Execute SonarScanner end
+                    sh "dotnet sonarscanner end /d:sonar.login=${env.SONAR_LOGIN}"
                 }
             }
         }
