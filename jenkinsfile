@@ -5,6 +5,7 @@ pipeline {
         DOCKER_IMAGE = 'helloworldmvc'
         SONARQUBE_URL = 'http://localhost:9000'
         SONAR_PROJECT_KEY = 'hello-world-mvc' // Define the project key here
+        SONAR_LOGIN='jenkins-sonar'
     }
 
     stages {
@@ -50,10 +51,20 @@ pipeline {
             }
         }
 
-        stage('SonarQube Scan') {
+         stage('SonarQube Scan') {
             steps {
-                withSonarQubeEnv('sqmvcapi') {
-                    sh "sonar-scanner -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} -Dsonar.host.url=${env.SONARQUBE_URL}"
+                script {
+                    // Install dotnet-sonarscanner tool globally
+                    sh 'dotnet tool install --global dotnet-sonarscanner'
+
+                    // Begin SonarQube analysis
+                    sh "dotnet sonarscanner begin /k:\"hello-world-mvc\" /d:sonar.host.url=\"http://localhost:9000\" /d:sonar.login=\"$SONAR_LOGIN\""
+
+                    // Build the solution
+                    sh 'dotnet build'
+
+                    // End SonarQube analysis
+                    sh "dotnet sonarscanner end /d:sonar.login=\"$SONAR_LOGIN\""
                 }
             }
         }
