@@ -1,0 +1,63 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = 'helloworldmvc'
+        SONARQUBE_URL = 'http://localhost:9000'
+        SONAR_PROJECT_KEY = 'hello-world-mvc' // Define the project key here
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/prakhardubey0123/hellomvcapp.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    dir('HelloWorldMvc') {
+                        sh 'dotnet build'
+                    }
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    dir('HelloWorldMvc.Tests') {
+                        sh 'dotnet test'
+                    }
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                script {
+                    sh 'docker build -t $DOCKER_IMAGE .'
+                }
+            }
+        }
+
+        stage('Docker Run') {
+            steps {
+                script {
+                    sh 'docker run -d -p 8888:80 --name myapp $DOCKER_IMAGE'
+                }
+            }
+        }
+
+        stage('SonarQube Scan') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh "dotnet sonarscanner begin /k:\"${env.SONAR_PROJECT_KEY}\" /d:sonar.host.url=\"$SONARQUBE_URL\""
+                    sh 'dotnet build'
+                    sh 'dotnet sonarscanner end'
+                }
+            }
+        }
+    }
+}
