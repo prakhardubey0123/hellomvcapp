@@ -55,7 +55,7 @@ pipeline {
             steps {
                 script {
                     // Install dotnet-sonarscanner tool
-                    sh 'dotnet tool install --global dotnet-sonarscanner'
+                    
                     // Add dotnet tools directory to PATH
                     env.PATH += ":${tool 'dotnet'}"
                     // Execute SonarScanner begin
