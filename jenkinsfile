@@ -54,14 +54,7 @@ pipeline {
          stage('SonarQube Scan') {
             steps {
                 script {
-                    // Install dotnet-sonarscanner tool
-                    
-                    // Execute SonarScanner begin
-                    sh "dotnet sonarscanner begin /k:${env.SONAR_PROJECT_KEY} /d:sonar.host.url=${env.SONAR_HOST_URL} /d:sonar.login=${env.SONAR_LOGIN}"
-                    // Build the project
-                    sh 'dotnet build'
-                    // Execute SonarScanner end
-                    sh "dotnet sonarscanner end /d:sonar.login=${env.SONAR_LOGIN}"
+                     sh "sonar-scanner -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} -Dsonar.host.url=${env.SONAR_HOST_URL} -Dsonar.login=${env.SONAR_LOGIN}"
                 }
             }
         }
