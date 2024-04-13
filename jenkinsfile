@@ -53,9 +53,7 @@ pipeline {
         stage('SonarQube Scan') {
             steps {
                 withSonarQubeEnv('sqmvcapi') {
-                    sh "dotnet sonarscanner begin /k:\"${env.SONAR_PROJECT_KEY}\" /d:sonar.host.url=\"$SONARQUBE_URL\""
-                    sh 'dotnet build'
-                    sh 'dotnet sonarscanner end'
+                    sh "sonar-scanner -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} -Dsonar.host.url=${env.SONARQUBE_URL}"
                 }
             }
         }
