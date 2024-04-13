@@ -56,8 +56,6 @@ pipeline {
                 script {
                     // Install dotnet-sonarscanner tool
                     
-                    // Add dotnet tools directory to PATH
-                    env.PATH += ":${tool 'dotnet'}"
                     // Execute SonarScanner begin
                     sh "dotnet sonarscanner begin /k:${env.SONAR_PROJECT_KEY} /d:sonar.host.url=${env.SONAR_HOST_URL} /d:sonar.login=${env.SONAR_LOGIN}"
                     // Build the project
