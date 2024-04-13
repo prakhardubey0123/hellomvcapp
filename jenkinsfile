@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/prakhardubey0123/hellomvcapp.git'
+                checkout scm
             }
         }
 
